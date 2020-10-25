@@ -20,15 +20,13 @@ ChunkType nextChunkType(ChunkType type)
 
 /**
  * @brief Chunk Constructor
- * @param i 行序数
- * @param j 列序数
+ * @param type 节点类型
+ * @param temperature 节点温度
  */
-Chunk::Chunk(int i, int j, ChunkType type)
+Chunk::Chunk(ChunkType type, double temperature)
 {
-    _i = i;
-    _j = j;
     _type = type;
-    _temperature = INIT_CHUNK_TEMP;
+    _temperature = temperature;
 }
 
 /**
@@ -47,4 +45,22 @@ double Chunk::getTemperature()
 void Chunk::setTemperature(double temperature)
 {
     _temperature = temperature;
+}
+
+/**
+ * @brief 获取节点类型
+ * @return 节点类型
+ */
+ChunkType Chunk::getType()
+{
+    return _type;
+}
+
+/**
+ * @brief 确认是边界节点
+ * @return 是否为边界节点
+ */
+bool Chunk::isEdgeChunk()
+{
+    return (bool)_type;
 }

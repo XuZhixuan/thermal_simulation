@@ -7,8 +7,14 @@ typedef struct
 {
     int cols, rows;
     Chunk** base;
+
+    Chunk* operator()(int i, int j)
+    {
+        int location = i * cols + j;
+        return base[location];
+    }
 } Matrix;
 
-void InitMatrix(Matrix& matrix, int rows, int cols);
+void InitMatrix(Matrix&, int, int);
 void DestroyMatrix(Matrix&);
 int MatrixLocate(Matrix&, int, int);

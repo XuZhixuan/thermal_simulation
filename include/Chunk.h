@@ -9,14 +9,15 @@ ChunkType nextChunkType(ChunkType);
 class Chunk
 {
     private:
-        int _i;
-        int _j;
         double _temperature;
         ChunkType _type;
 
     public:
-        Chunk(int, int, ChunkType);
+        Chunk(ChunkType, double);
 
         double getTemperature();
         void setTemperature(double);
+
+        ChunkType getType();
+        bool isEdgeChunk();
 };
