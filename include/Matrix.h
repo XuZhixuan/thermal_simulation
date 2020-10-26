@@ -8,7 +8,7 @@ typedef struct
     int cols, rows;
     Chunk** base;
 
-    Chunk* operator()(int i, int j)
+    Chunk* operator()(int i, int j) const
     {
         int location = i * cols + j;
         return base[location];
