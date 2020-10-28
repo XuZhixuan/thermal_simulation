@@ -35,6 +35,6 @@ public:
     LChunk(ChunkType, ChunkStatus, double);
     ChunkStatus getStatus();
     
-    void LChunk::setStatus(ChunkStatus);
+    void setStatus(ChunkStatus);
     bool setCompensate(double);
 };
