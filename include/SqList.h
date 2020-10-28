@@ -6,7 +6,12 @@
 struct SqList
 {
 	int length;
-	Chunk** base;
+	LChunk** base;
+
+	LChunk* operator[](int position)
+	{
+		return base[position];
+	}
 };
 
 void InitSqList(SqList&, int);

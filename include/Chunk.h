@@ -3,16 +3,17 @@
 #include "common.h"
 
 enum ChunkType { Full, Half, Quarter };
+enum ChunkStatus {Liquid, Solid};
 
 ChunkType nextChunkType(ChunkType);
+ChunkStatus nextChunkStatus(ChunkStatus);
 
 class Chunk
 {
-private:
+protected:    
+    ChunkType _type;    
     double _temperature;
-    ChunkType _type;
-    double _compensate = 0;
-
+    
 public:
     Chunk(ChunkType, double);
 
@@ -21,4 +22,19 @@ public:
 
     ChunkType getType();
     bool isEdgeChunk();
+};
+
+class LChunk : public Chunk
+{
+private:
+    ChunkStatus _status;
+    double _compensate = 0;
+public:
+    static double _max_composent;
+
+    LChunk(ChunkType, ChunkStatus, double);
+    ChunkStatus getStatus();
+    
+    void LChunk::setStatus(ChunkStatus);
+    bool setCompensate(double);
 };

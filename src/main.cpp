@@ -1,10 +1,13 @@
 #include <iostream>
 
+#include "SqList.h"
 #include "Matrix.h"
 #include "Chunk.h"
 
 void simulate(Matrix&, Matrix&);
+void simulate(SqList&, SqList&);
 void updateTemperature(Matrix&, Matrix&, double, double);
+void updateTemperature(SqList&, SqList&, double, double, double);
 
 int main()
 {
@@ -46,6 +49,16 @@ void simulate(Matrix& material, Matrix& material_cp)
 }
 
 /**
+ * @brief 温度场数值模拟
+ * @param material 节点线性表(Previous)
+ * @param material_cp 节点线性表(Current)
+ */
+void simulate(SqList& material, SqList& material_cp)
+{
+    // TODO: 完成模拟主程序
+}
+
+/**
  * @brief 更新温度场
  * @param material 节点矩阵(Previous)
  * @param material_cp 节点矩阵(Current)
@@ -83,4 +96,50 @@ void updateTemperature(Matrix& material, Matrix& material_cp, double coef_m1, do
             );
         }
     }
+}
+
+/**
+ * @brief 更新温度场
+ * @param material 节点线性表(Previous)
+ * @param material_cp 节点线性表(Current)
+ * @param coef_m1 差分方程系数 M1
+ * @param coef_m2 差分方程系数 M2
+ */
+void updateTemperature(SqList& material, SqList& material_cp, double coef_m1, double coef_m2, double max_composent)
+{
+    double item_1, item_2, item_self;
+
+    for (int i = 0; i < material.length; i++)
+    {
+        if (material[i]->isEdgeChunk()) continue;
+
+        item_1 = coef_m1 * material[i - 1]->getTemperature();
+        item_2 = coef_m2 * material[i + 1]->getTemperature();
+        item_self = (1 - coef_m1 - coef_m2) * material[i]->getTemperature();
+
+        material_cp[i]->setTemperature(item_1 + item_2 + item_self);
+
+        if (material_cp[i]->getTemperature() <= FREEZING_TEMPERATURE)
+        {
+            if (material_cp[i]->setCompensate(FREEZING_TEMPERATURE - material_cp[i]->getTemperature()))
+            {
+                material_cp[i]->setStatus(Solid);
+            }
+        }
+        
+    }
+    
+    for (int i = 0; i < material.length; i++)
+    {
+        if (material[i]->isEdgeChunk()) continue;
+
+        material[i]->setTemperature(
+            material_cp[i]->getTemperature()
+        );
+
+        material[i]->setStatus(
+            material_cp[i]->getStatus()
+        );
+    }
+    
 }
