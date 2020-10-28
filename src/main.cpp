@@ -11,8 +11,8 @@ int main()
     Matrix material, material_copy;
 
     // 输入材料长宽
-    int x_length, y_length;
-    std::cin >> x_length >> y_length;
+    int x_length = 8 ,y_length = 8;
+    // std::cin >> x_length >> y_length;
 
     // 初始化材料节点矩阵
     InitMatrix(material, (x_length / X_DELTA + 1), (y_length / Y_DELTA + 1));
@@ -33,7 +33,7 @@ int main()
  */
 void simulate(Matrix& material, Matrix& material_cp)
 {
-    float time = 0;
+    double time = 0;
     double coef_m1 = (THERMAL_CONDUCTIVITY * TIME_DELTA) / (X_DELTA * X_DELTA);
     double coef_m2 = (THERMAL_CONDUCTIVITY * TIME_DELTA) / (Y_DELTA * Y_DELTA);
 
@@ -42,7 +42,7 @@ void simulate(Matrix& material, Matrix& material_cp)
         updateTemperature(material, material_cp, coef_m1, coef_m2);
         // TODO: 添加输出温度场的条件与函数调用
         time += TIME_DELTA;
-    }    
+    }
 }
 
 /**
@@ -55,7 +55,7 @@ void simulate(Matrix& material, Matrix& material_cp)
 void updateTemperature(Matrix& material, Matrix& material_cp, double coef_m1, double coef_m2)
 {
     double item_x, item_y, item_self;
-    
+
     for (int i = 0; i < material.rows; i++)
     {
         for (int j = 0; j < material.cols; j++)

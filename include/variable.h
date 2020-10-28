@@ -11,3 +11,12 @@
 
 /** 热导率 (α) */
 #define THERMAL_CONDUCTIVITY 0.05
+
+/** 是否考虑凝固 */
+#define SOLIDIFICATING false
+
+/** 材料凝固温度 */
+#define FREEZING_TEMPERATURE 660
+
+/** 材料凝固潜热 */
+#define SOLIDIFICATION_HEAT 398

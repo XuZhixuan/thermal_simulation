@@ -12,7 +12,7 @@ ChunkType nextChunkType(ChunkType type)
     case Full:
         return Half;
     case Half:
-        return Quarter;    
+        return Quarter;
     default:
         return Full;
     }

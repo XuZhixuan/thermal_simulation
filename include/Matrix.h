@@ -3,7 +3,7 @@
 #include "common.h"
 #include "Chunk.h"
 
-typedef struct
+struct Matrix
 {
     int cols, rows;
     Chunk** base;
@@ -13,7 +13,7 @@ typedef struct
         int location = i * cols + j;
         return base[location];
     }
-} Matrix;
+};
 
 void InitMatrix(Matrix&, int, int);
 void DestroyMatrix(Matrix&);

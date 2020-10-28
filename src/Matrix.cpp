@@ -13,7 +13,7 @@ void InitMatrix(Matrix& matrix, int rows, int cols)
 
     matrix.rows = rows;
     matrix.cols = cols;
-    matrix.base = new Chunk*[chunks];
+    matrix.base = new Chunk * [chunks];
 
     ChunkType type = Full;
 
@@ -22,12 +22,12 @@ void InitMatrix(Matrix& matrix, int rows, int cols)
         for (int j = 0; j < cols; j++)
         {
             if (i == 0 || i == rows - 1) type = nextChunkType(type);
-            if (j == 0 || j == cols - 1) type = nextChunkType(type);            
-            
+            if (j == 0 || j == cols - 1) type = nextChunkType(type);
+
             matrix.base[i * cols + j] = new Chunk(type, type == Full ? INIT_CHUNK_TEMPERATURE : INIT_ENVIRONMENT_TEMPERATUE);
             type = Full;
-        }        
-    }    
+        }
+    }
 }
 
 /**
@@ -50,7 +50,7 @@ void DestroyMatrix(Matrix& matrix)
  * @param j 列序
  * @return 指定节点的位置
  */
-int MatrixLocate(Matrix&  matrix, int i, int j)
+int MatrixLocate(Matrix& matrix, int i, int j)
 {
     return i * matrix.cols + j;
 }
