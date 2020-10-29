@@ -3,6 +3,7 @@
 #include "SqList.h"
 #include "Matrix.h"
 #include "Chunk.h"
+#include "Output.h"
 
 void simulate(Matrix &, Matrix &);
 void simulate(SqList &, SqList &);
