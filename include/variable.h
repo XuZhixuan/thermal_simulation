@@ -20,3 +20,42 @@
 
 /** 材料凝固潜热 */
 #define SOLIDIFICATION_HEAT 398
+
+//--------------------------
+// Thermal Conductivity 
+//--------------------------
+
+/** 液相导热系数 */
+#define LIQUID_THERMAL_CONDUCTIVITY 10
+
+/** 固相导热系数 */
+#define SOLID_THERMAL_CONDUCTIVITY 2.28
+
+/** 铸形导热系数 */
+#define CAST_THERMAL_CONDUCTIVITY 0.00627
+
+//--------------------------
+// Heat Capacity
+//--------------------------
+
+/** 液相比热 */
+#define LIQUID_HEAT_CAPACITY 1.09
+
+/** 固相比热 */
+#define SOLID_HEAT_CAPACITY 1.17
+
+/** 铸形比热 */
+#define CAST_HEAT_CAPACITY 0.8987
+
+//--------------------------
+// Density
+//--------------------------
+
+/** 液相密度 */
+#define LIQUID_DENSITY 2.38
+
+/** 固相密度 */
+#define SOLID_DENSITY 2.702
+
+/** 铸形密度 */
+#define CAST_DENSITY 1.55

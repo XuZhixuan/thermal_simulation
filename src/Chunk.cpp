@@ -128,3 +128,27 @@ bool LChunk::setCompensate(double temperature)
 
     return false;
 }
+
+/**
+ * @brief 获取节点系数
+ * @param left 左节点
+ * @param right 右节点
+ * @param coef_l 节点左系数
+ * @param coef_r 节点右系数
+ */
+void LChunk::getCoef(LChunk* left, LChunk* right, double& coef_l, double& coef_r)
+{
+    if (this->getStatus() == Solid) {
+        if (left->getStatus() == Solid) coef_l = _coef_ss;
+        else coef_l = _coef_sl;
+
+        if (right->getStatus() == Solid) coef_l = _coef_ss;
+        else coef_l = _coef_sl;
+    } else {
+        if (left->getStatus() == Solid) coef_l = _coef_ls;
+        else coef_l = _coef_ll;
+
+        if (right->getStatus() == Solid) coef_l = _coef_ls;
+        else coef_l = _coef_ll;
+    }
+}

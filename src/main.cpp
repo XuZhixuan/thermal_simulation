@@ -4,15 +4,17 @@
 #include "Matrix.h"
 #include "Chunk.h"
 
+void initCoef(SqList&, SqList&);
 void simulate(Matrix&, Matrix&);
 void simulate(SqList&, SqList&);
 void updateTemperature(Matrix&, Matrix&, double, double);
-void updateTemperature(SqList&, SqList&, double, double, double);
+void updateTemperature(SqList&, SqList&);
 
 int main()
 {
     Matrix material, material_copy;
-
+    // SqList material, material_copy;
+    // initCoef();
     // 输入材料长宽
     int x_length = 8 ,y_length = 8;
     // std::cin >> x_length >> y_length;
@@ -27,6 +29,23 @@ int main()
     // 销毁内存空间
     DestroyMatrix(material);
     return 0;
+}
+
+/**
+ * @brief 设置系数
+ */
+void initCoef()
+{
+    double k_ss = SOLID_THERMAL_CONDUCTIVITY;
+    double k_ll = LIQUID_THERMAL_CONDUCTIVITY;
+    double k_sl = 2 / (1 / k_ss + 1 / k_ll);
+
+    LChunk::_max_composent = SOLIDIFICATION_HEAT / SOLID_HEAT_CAPACITY;
+
+    LChunk::_coef_ss = k_ss * TIME_DELTA / (SOLID_DENSITY * SOLID_HEAT_CAPACITY * X_DELTA * X_DELTA);
+    LChunk::_coef_ll = k_ll * TIME_DELTA / (LIQUID_DENSITY * LIQUID_HEAT_CAPACITY * X_DELTA * X_DELTA);
+    LChunk::_coef_sl = k_sl * TIME_DELTA / (SOLID_DENSITY * SOLID_HEAT_CAPACITY * X_DELTA * X_DELTA);
+    LChunk::_coef_ls = k_sl * TIME_DELTA / (LIQUID_DENSITY * LIQUID_HEAT_CAPACITY * X_DELTA * X_DELTA);    
 }
 
 /**
@@ -55,7 +74,15 @@ void simulate(Matrix& material, Matrix& material_cp)
  */
 void simulate(SqList& material, SqList& material_cp)
 {
-    // TODO: 完成模拟主程序
+    double time = 0;
+
+    while (time <= TIME_MAX)
+    {
+        updateTemperature(material, material_cp);
+        // TODO: 添加输出温度场的条件与函数调用
+        time += TIME_DELTA;
+    }
+    
 }
 
 /**
@@ -105,19 +132,22 @@ void updateTemperature(Matrix& material, Matrix& material_cp, double coef_m1, do
  * @param coef_m1 差分方程系数 M1
  * @param coef_m2 差分方程系数 M2
  */
-void updateTemperature(SqList& material, SqList& material_cp, double coef_m1, double coef_m2, double max_composent)
+void updateTemperature(SqList& material, SqList& material_cp)
 {
-    double item_1, item_2, item_self;
+    double coef_m1, coef_m2;
+    double item_l, item_r, item_self;
 
     for (int i = 0; i < material.length; i++)
     {
         if (material[i]->isEdgeChunk()) continue;
 
-        item_1 = coef_m1 * material[i - 1]->getTemperature();
-        item_2 = coef_m2 * material[i + 1]->getTemperature();
+        material[i]->getCoef(material[i - 1], material[i + 1], coef_m1, coef_m2);
+
+        item_l = coef_m1 * material[i - 1]->getTemperature();
+        item_r = coef_m2 * material[i + 1]->getTemperature();
         item_self = (1 - coef_m1 - coef_m2) * material[i]->getTemperature();
 
-        material_cp[i]->setTemperature(item_1 + item_2 + item_self);
+        material_cp[i]->setTemperature(item_l + item_r + item_self);
 
         if (material_cp[i]->getTemperature() <= FREEZING_TEMPERATURE)
         {
@@ -125,8 +155,7 @@ void updateTemperature(SqList& material, SqList& material_cp, double coef_m1, do
             {
                 material_cp[i]->setStatus(Solid);
             }
-        }
-        
+        }        
     }
     
     for (int i = 0; i < material.length; i++)

@@ -26,15 +26,17 @@ public:
 
 class LChunk : public Chunk
 {
-private:
+protected:
     ChunkStatus _status;
     double _compensate = 0;
+    double _coef_m1, _coef_m2;
 public:
     static double _max_composent;
+    static double _coef_ss, _coef_ll ,_coef_sl, _coef_ls;
 
     LChunk(ChunkType, ChunkStatus, double);
-    ChunkStatus getStatus();
-    
+    ChunkStatus getStatus();    
     void setStatus(ChunkStatus);
     bool setCompensate(double);
+    void LChunk::getCoef(LChunk*, LChunk*, double&, double&);
 };
