@@ -4,11 +4,10 @@
 #include "Matrix.h"
 #include "Chunk.h"
 
-void initCoef(SqList&, SqList&);
-void simulate(Matrix&, Matrix&);
-void simulate(SqList&, SqList&);
-void updateTemperature(Matrix&, Matrix&, double, double);
-void updateTemperature(SqList&, SqList&);
+void simulate(Matrix &, Matrix &);
+void simulate(SqList &, SqList &);
+void updateTemperature(Matrix &, Matrix &, double, double);
+void updateTemperature(SqList &, SqList &);
 
 int main()
 {
@@ -16,7 +15,7 @@ int main()
     // SqList material, material_copy;
     // initCoef();
     // 输入材料长宽
-    int x_length = 8 ,y_length = 8;
+    int x_length = 8, y_length = 8;
     // std::cin >> x_length >> y_length;
 
     // 初始化材料节点矩阵
@@ -32,28 +31,11 @@ int main()
 }
 
 /**
- * @brief 设置系数
- */
-void initCoef()
-{
-    double k_ss = SOLID_THERMAL_CONDUCTIVITY;
-    double k_ll = LIQUID_THERMAL_CONDUCTIVITY;
-    double k_sl = 2 / (1 / k_ss + 1 / k_ll);
-
-    LChunk::_max_composent = SOLIDIFICATION_HEAT / SOLID_HEAT_CAPACITY;
-
-    LChunk::_coef_ss = k_ss * TIME_DELTA / (SOLID_DENSITY * SOLID_HEAT_CAPACITY * X_DELTA * X_DELTA);
-    LChunk::_coef_ll = k_ll * TIME_DELTA / (LIQUID_DENSITY * LIQUID_HEAT_CAPACITY * X_DELTA * X_DELTA);
-    LChunk::_coef_sl = k_sl * TIME_DELTA / (SOLID_DENSITY * SOLID_HEAT_CAPACITY * X_DELTA * X_DELTA);
-    LChunk::_coef_ls = k_sl * TIME_DELTA / (LIQUID_DENSITY * LIQUID_HEAT_CAPACITY * X_DELTA * X_DELTA);    
-}
-
-/**
  * @brief 温度场数值模拟
  * @param material 节点矩阵(Previous)
  * @param material_cp 节点矩阵(Current)
  */
-void simulate(Matrix& material, Matrix& material_cp)
+void simulate(Matrix &material, Matrix &material_cp)
 {
     double time = 0;
     double coef_m1 = (THERMAL_CONDUCTIVITY * TIME_DELTA) / (X_DELTA * X_DELTA);
@@ -72,7 +54,7 @@ void simulate(Matrix& material, Matrix& material_cp)
  * @param material 节点线性表(Previous)
  * @param material_cp 节点线性表(Current)
  */
-void simulate(SqList& material, SqList& material_cp)
+void simulate(SqList &material, SqList &material_cp)
 {
     double time = 0;
 
@@ -82,7 +64,6 @@ void simulate(SqList& material, SqList& material_cp)
         // TODO: 添加输出温度场的条件与函数调用
         time += TIME_DELTA;
     }
-    
 }
 
 /**
@@ -92,7 +73,7 @@ void simulate(SqList& material, SqList& material_cp)
  * @param coef_m1 差分方程系数 M1
  * @param coef_m2 差分方程系数 M2
  */
-void updateTemperature(Matrix& material, Matrix& material_cp, double coef_m1, double coef_m2)
+void updateTemperature(Matrix &material, Matrix &material_cp, double coef_m1, double coef_m2)
 {
     double item_x, item_y, item_self;
 
@@ -100,7 +81,8 @@ void updateTemperature(Matrix& material, Matrix& material_cp, double coef_m1, do
     {
         for (int j = 0; j < material.cols; j++)
         {
-            if (material(i, j)->isEdgeChunk()) continue;
+            if (material(i, j)->isEdgeChunk())
+                continue;
 
             item_x = coef_m1 * (material(i - 1, j)->getTemperature() + material(i + 1, j)->getTemperature());
             item_y = coef_m2 * (material(i, j - 1)->getTemperature() + material(i, j + 1)->getTemperature());
@@ -116,11 +98,11 @@ void updateTemperature(Matrix& material, Matrix& material_cp, double coef_m1, do
     {
         for (int j = 0; j < material.cols; j++)
         {
-            if (material(i, j)->isEdgeChunk()) continue;
+            if (material(i, j)->isEdgeChunk())
+                continue;
 
             material(i, j)->setTemperature(
-                material_cp(i, j)->getTemperature()
-            );
+                material_cp(i, j)->getTemperature());
         }
     }
 }
@@ -132,14 +114,15 @@ void updateTemperature(Matrix& material, Matrix& material_cp, double coef_m1, do
  * @param coef_m1 差分方程系数 M1
  * @param coef_m2 差分方程系数 M2
  */
-void updateTemperature(SqList& material, SqList& material_cp)
+void updateTemperature(SqList &material, SqList &material_cp)
 {
     double coef_m1, coef_m2;
     double item_l, item_r, item_self;
 
     for (int i = 0; i < material.length; i++)
     {
-        if (material[i]->isEdgeChunk()) continue;
+        if (material[i]->isEdgeChunk())
+            continue;
 
         material[i]->getCoef(material[i - 1], material[i + 1], coef_m1, coef_m2);
 
@@ -155,20 +138,18 @@ void updateTemperature(SqList& material, SqList& material_cp)
             {
                 material_cp[i]->setStatus(Solid);
             }
-        }        
+        }
     }
-    
+
     for (int i = 0; i < material.length; i++)
     {
-        if (material[i]->isEdgeChunk()) continue;
+        if (material[i]->isEdgeChunk())
+            continue;
 
         material[i]->setTemperature(
-            material_cp[i]->getTemperature()
-        );
+            material_cp[i]->getTemperature());
 
         material[i]->setStatus(
-            material_cp[i]->getStatus()
-        );
+            material_cp[i]->getStatus());
     }
-    
 }

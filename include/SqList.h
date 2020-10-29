@@ -6,13 +6,13 @@
 struct SqList
 {
 	int length;
-	LChunk** base;
+	LChunk **base;
 
-	LChunk* operator[](int position)
+	LChunk *operator[](int position)
 	{
 		return base[position];
 	}
 };
 
-void InitSqList(SqList&, int);
-void DestroySqList(SqList&);
+void InitSqList(SqList &, int);
+void DestroySqList(SqList &);

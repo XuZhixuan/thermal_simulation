@@ -1,5 +1,16 @@
 #include "Chunk.h"
 
+double k_ss = SOLID_THERMAL_CONDUCTIVITY;
+double k_ll = LIQUID_THERMAL_CONDUCTIVITY;
+double k_sl = 2 / (1 / k_ss + 1 / k_ll);
+
+double LChunk::_max_composent = SOLIDIFICATION_HEAT / SOLID_HEAT_CAPACITY;
+
+double LChunk::_coef_ss = k_ss * TIME_DELTA / (SOLID_DENSITY * SOLID_HEAT_CAPACITY * X_DELTA * X_DELTA);
+double LChunk::_coef_ll = k_ll * TIME_DELTA / (LIQUID_DENSITY * LIQUID_HEAT_CAPACITY * X_DELTA * X_DELTA);
+double LChunk::_coef_sl = k_sl * TIME_DELTA / (SOLID_DENSITY * SOLID_HEAT_CAPACITY * X_DELTA * X_DELTA);
+double LChunk::_coef_ls = k_sl * TIME_DELTA / (LIQUID_DENSITY * LIQUID_HEAT_CAPACITY * X_DELTA * X_DELTA);
+
 /**
  * @brief 获取下一个 Chunk 类型
  * @param type ChunkType
@@ -88,7 +99,7 @@ bool Chunk::isEdgeChunk()
  * @param temperature 节点温度
  */
 LChunk::LChunk(ChunkType type, ChunkStatus status, double temperature) : Chunk(type, temperature)
-{    
+{
     _status = status;
 }
 
@@ -136,19 +147,30 @@ bool LChunk::setCompensate(double temperature)
  * @param coef_l 节点左系数
  * @param coef_r 节点右系数
  */
-void LChunk::getCoef(LChunk* left, LChunk* right, double& coef_l, double& coef_r)
+void LChunk::getCoef(LChunk *left, LChunk *right, double &coef_l, double &coef_r)
 {
-    if (this->getStatus() == Solid) {
-        if (left->getStatus() == Solid) coef_l = _coef_ss;
-        else coef_l = _coef_sl;
+    if (this->getStatus() == Solid)
+    {
+        if (left->getStatus() == Solid)
+            coef_l = _coef_ss;
+        else
+            coef_l = _coef_sl;
 
-        if (right->getStatus() == Solid) coef_l = _coef_ss;
-        else coef_l = _coef_sl;
-    } else {
-        if (left->getStatus() == Solid) coef_l = _coef_ls;
-        else coef_l = _coef_ll;
+        if (right->getStatus() == Solid)
+            coef_l = _coef_ss;
+        else
+            coef_l = _coef_sl;
+    }
+    else
+    {
+        if (left->getStatus() == Solid)
+            coef_l = _coef_ls;
+        else
+            coef_l = _coef_ll;
 
-        if (right->getStatus() == Solid) coef_l = _coef_ls;
-        else coef_l = _coef_ll;
+        if (right->getStatus() == Solid)
+            coef_l = _coef_ls;
+        else
+            coef_l = _coef_ll;
     }
 }
