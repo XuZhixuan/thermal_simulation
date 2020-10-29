@@ -132,7 +132,7 @@ void updateTemperature(SqList &material, SqList &material_cp)
 
         material_cp[i]->setTemperature(item_l + item_r + item_self);
 
-        if (material_cp[i]->getTemperature() <= FREEZING_TEMPERATURE)
+        if (material[i]->getStatus() == Liquid && material_cp[i]->getTemperature() <= FREEZING_TEMPERATURE)
         {
             if (material_cp[i]->setCompensate(FREEZING_TEMPERATURE - material_cp[i]->getTemperature()))
             {
