@@ -2,14 +2,23 @@
 
 double k_ss = SOLID_THERMAL_CONDUCTIVITY;
 double k_ll = LIQUID_THERMAL_CONDUCTIVITY;
+double k_cc = CAST_THERMAL_CONDUCTIVITY;
+
 double k_sl = 2 / (1 / k_ss + 1 / k_ll);
+double k_sc = 2 / (1 / k_ss + 1 / k_cc);
+double k_lc = 2 / (1 / k_ll + 1 / k_cc);
 
 double LChunk::_max_composent = SOLIDIFICATION_HEAT / SOLID_HEAT_CAPACITY;
 
 double LChunk::_coef_ss = k_ss * TIME_DELTA / (SOLID_DENSITY * SOLID_HEAT_CAPACITY * X_DELTA * X_DELTA);
 double LChunk::_coef_ll = k_ll * TIME_DELTA / (LIQUID_DENSITY * LIQUID_HEAT_CAPACITY * X_DELTA * X_DELTA);
+double LChunk::_coef_cc = k_cc * TIME_DELTA / (CAST_DENSITY * CAST_HEAT_CAPACITY * X_DELTA * X_DELTA);
 double LChunk::_coef_sl = k_sl * TIME_DELTA / (SOLID_DENSITY * SOLID_HEAT_CAPACITY * X_DELTA * X_DELTA);
+double LChunk::_coef_sc = k_sc * TIME_DELTA / (SOLID_DENSITY * SOLID_HEAT_CAPACITY * X_DELTA * X_DELTA);
 double LChunk::_coef_ls = k_sl * TIME_DELTA / (LIQUID_DENSITY * LIQUID_HEAT_CAPACITY * X_DELTA * X_DELTA);
+double LChunk::_coef_lc = k_lc * TIME_DELTA / (LIQUID_DENSITY * LIQUID_HEAT_CAPACITY * X_DELTA * X_DELTA);
+double LChunk::_coef_cs = k_sc * TIME_DELTA / (CAST_DENSITY * CAST_HEAT_CAPACITY * X_DELTA * X_DELTA);
+double LChunk::_coef_cl = k_lc * TIME_DELTA / (CAST_DENSITY * CAST_HEAT_CAPACITY * X_DELTA * X_DELTA);
 
 /**
  * @brief 获取下一个 Chunk 类型
@@ -69,9 +78,10 @@ double Chunk::getTemperature()
  * @brief 更新节点温度
  * @param temperature 温度
  */
-void Chunk::setTemperature(double temperature)
+Chunk *Chunk::setTemperature(double temperature)
 {
     _temperature = temperature;
+    return this;
 }
 
 /**
@@ -116,9 +126,10 @@ ChunkStatus LChunk::getStatus()
  * @brief 设置当前节点状态
  * @param status 节点状态
  */
-void LChunk::setStatus(ChunkStatus status)
+LChunk *LChunk::setStatus(ChunkStatus status)
 {
     _status = status;
+    return this;
 }
 
 /**
@@ -149,28 +160,127 @@ bool LChunk::setCompensate(double temperature)
  */
 void LChunk::getCoef(LChunk *left, LChunk *right, double &coef_l, double &coef_r)
 {
-    if (this->getStatus() == Solid)
+    switch (_status)
     {
-        if (left->getStatus() == Solid)
+    case Solid:
+        switch (left->getStatus())
+        {
+        case Solid:
             coef_l = _coef_ss;
-        else
-            coef_l = _coef_sl;
+            break;
 
-        if (right->getStatus() == Solid)
-            coef_l = _coef_ss;
-        else
+        case Liquid:
             coef_l = _coef_sl;
-    }
-    else
-    {
-        if (left->getStatus() == Solid)
-            coef_l = _coef_ls;
-        else
-            coef_l = _coef_ll;
+            break;
 
-        if (right->getStatus() == Solid)
+        case Cast:
+            coef_l = _coef_sc;
+            break;
+
+        default:
+            coef_l = 0;
+            break;
+        }
+
+        switch (right->getStatus())
+        {
+        case Solid:
+            coef_r = _coef_ss;
+            break;
+
+        case Liquid:
+            coef_r = _coef_sl;
+            break;
+
+        case Cast:
+            coef_r = _coef_sc;
+            break;
+
+        default:
+            coef_r = 0;
+            break;
+        }
+        break;
+
+    case Liquid:
+        switch (left->getStatus())
+        {
+        case Solid:
             coef_l = _coef_ls;
-        else
+            break;
+
+        case Liquid:
             coef_l = _coef_ll;
+            break;
+
+        case Cast:
+            coef_l = _coef_lc;
+            break;
+
+        default:
+            coef_l = 0;
+            break;
+        }
+
+        switch (right->getStatus())
+        {
+        case Solid:
+            coef_r = _coef_ls;
+            break;
+
+        case Liquid:
+            coef_r = _coef_ll;
+            break;
+
+        case Cast:
+            coef_r = _coef_lc;
+            break;
+
+        default:
+            coef_r = 0;
+            break;
+        }
+        break;
+
+    case Cast:
+        switch (left->getStatus())
+        {
+        case Solid:
+            coef_l = _coef_cs;
+            break;
+
+        case Liquid:
+            coef_l = _coef_cl;
+            break;
+
+        case Cast:
+            coef_l = _coef_cc;
+            break;
+
+        default:
+            coef_l = 0;
+            break;
+        }
+
+        switch (right->getStatus())
+        {
+        case Solid:
+            coef_r = _coef_cs;
+            break;
+
+        case Liquid:
+            coef_r = _coef_cl;
+            break;
+
+        case Cast:
+            coef_r = _coef_cc;
+            break;
+
+        default:
+            coef_r = 0;
+            break;
+        }
+
+        break;
     }
 }

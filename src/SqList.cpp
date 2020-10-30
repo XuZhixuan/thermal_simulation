@@ -24,6 +24,7 @@ void InitSqList(SqList &list, int length)
 			status,
 			type == Full ? INIT_CHUNK_TEMPERATURE : INIT_ENVIRONMENT_TEMPERATUE);
 		type = Full;
+		status = Liquid;
 	}
 }
 

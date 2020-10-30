@@ -54,6 +54,8 @@ void saveState(SqList &material, double time, string filename)
         temp += to_string(material[i]->getTemperature());
         temp += " ";
     }
+
+    saveToFile(filename, temp);
 }
 
 /**
@@ -61,7 +63,7 @@ void saveState(SqList &material, double time, string filename)
  * @param list 数据集合
  * @param filename 文件名
  */
-void saveState(vector<double> &list, string filenmae)
+void saveState(vector<double> &list, double time, string filenmae)
 {
     string content;
 
@@ -70,5 +72,6 @@ void saveState(vector<double> &list, string filenmae)
         content += to_string(*i);
         content += " ";
     }
-    
+
+    saveToFile(filenmae, content);
 }

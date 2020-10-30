@@ -8,26 +8,32 @@
 void simulate(Matrix &, Matrix &);
 void simulate(SqList &, SqList &);
 void updateTemperature(Matrix &, Matrix &, double, double);
-void updateTemperature(SqList &, SqList &);
+void updateTemperature(SqList &, SqList &, vector<double> &);
 
 int main()
 {
-    Matrix material, material_copy;
-    // SqList material, material_copy;
+    // Matrix material, material_copy;
+    SqList material, material_copy;
     // initCoef();
     // 输入材料长宽
     int x_length = 8, y_length = 8;
     // std::cin >> x_length >> y_length;
 
     // 初始化材料节点矩阵
-    InitMatrix(material, (x_length / X_DELTA + 1), (y_length / Y_DELTA + 1));
-    InitMatrix(material_copy, (x_length / X_DELTA + 1), (y_length / Y_DELTA + 1));
+    // InitMatrix(material, (x_length / X_DELTA + 1), (y_length / Y_DELTA + 1));
+    // InitMatrix(material_copy, (x_length / X_DELTA + 1), (y_length / Y_DELTA + 1));
+
+    InitSqList(material, 24 / X_DELTA + 1);
+    InitSqList(material_copy, 24 / X_DELTA + 1);
 
     // 运行模拟
     simulate(material, material_copy);
 
+    // saveState(material, 600, "temp_field.txt");
+
     // 销毁内存空间
-    DestroyMatrix(material);
+    DestroySqList(material);
+    // DestroyMatrix(material);
     return 0;
 }
 
@@ -50,6 +56,16 @@ void simulate(Matrix &material, Matrix &material_cp)
     }
 }
 
+void before(SqList &material)
+{
+    for (int i = 0; i < material.length; i++)
+    {
+        if (i > 8 && i < 15)
+            continue;
+        material[i]->setStatus(Cast)->setTemperature(INIT_ENVIRONMENT_TEMPERATUE);
+    }
+}
+
 /**
  * @brief 温度场数值模拟
  * @param material 节点线性表(Previous)
@@ -58,13 +74,21 @@ void simulate(Matrix &material, Matrix &material_cp)
 void simulate(SqList &material, SqList &material_cp)
 {
     double time = 0;
+    before(material);
+    before(material_cp);
+    vector<double> center;
 
     while (time <= TIME_MAX)
     {
-        updateTemperature(material, material_cp);
+        updateTemperature(material, material_cp, center);
         // TODO: 添加输出温度场的条件与函数调用
         time += TIME_DELTA;
+        if (material[material.length / 2]->getStatus() == Solid)
+            break;
     }
+
+    saveState(center, time, "solidification.txt");
+    saveState(material, time, "solidification1.txt");
 }
 
 /**
@@ -112,10 +136,9 @@ void updateTemperature(Matrix &material, Matrix &material_cp, double coef_m1, do
  * @brief 更新温度场
  * @param material 节点线性表(Previous)
  * @param material_cp 节点线性表(Current)
- * @param coef_m1 差分方程系数 M1
- * @param coef_m2 差分方程系数 M2
+ * @param center 中心温度表
  */
-void updateTemperature(SqList &material, SqList &material_cp)
+void updateTemperature(SqList &material, SqList &material_cp, vector<double> &center)
 {
     double coef_m1, coef_m2;
     double item_l, item_r, item_self;
@@ -153,4 +176,5 @@ void updateTemperature(SqList &material, SqList &material_cp)
         material[i]->setStatus(
             material_cp[i]->getStatus());
     }
+    center.push_back(material[material.length / 2]->getTemperature());
 }
