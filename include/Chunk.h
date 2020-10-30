@@ -1,6 +1,9 @@
 #pragma once
 
 #include "common.h"
+#include <map>
+
+using std::map, std::pair;
 
 enum ChunkType
 {
@@ -14,6 +17,9 @@ enum ChunkStatus
     Solid,
     Cast
 };
+
+typedef map<ChunkStatus, map<ChunkStatus, double>> p_map;
+typedef map<ChunkStatus, double> coef_map;
 
 ChunkType nextChunkType(ChunkType);
 ChunkStatus nextChunkStatus(ChunkStatus);
@@ -42,7 +48,7 @@ protected:
 
 public:
     static double _max_composent;
-    static double _coef_ss, _coef_sl, _coef_sc, _coef_ll, _coef_ls, _coef_lc, _coef_cc, _coef_cs, _coef_cl;
+    static p_map _coefs;
 
     LChunk(ChunkType, ChunkStatus, double);
     ChunkStatus getStatus();

@@ -56,6 +56,10 @@ void simulate(Matrix &material, Matrix &material_cp)
     }
 }
 
+/**
+ * @brief Set material with specificed status
+ * @param material material chunks list
+ */
 void before(SqList &material)
 {
     for (int i = 0; i < material.length; i++)

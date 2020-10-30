@@ -10,15 +10,29 @@ double k_lc = 2 / (1 / k_ll + 1 / k_cc);
 
 double LChunk::_max_composent = SOLIDIFICATION_HEAT / SOLID_HEAT_CAPACITY;
 
-double LChunk::_coef_ss = k_ss * TIME_DELTA / (SOLID_DENSITY * SOLID_HEAT_CAPACITY * X_DELTA * X_DELTA);
-double LChunk::_coef_ll = k_ll * TIME_DELTA / (LIQUID_DENSITY * LIQUID_HEAT_CAPACITY * X_DELTA * X_DELTA);
-double LChunk::_coef_cc = k_cc * TIME_DELTA / (CAST_DENSITY * CAST_HEAT_CAPACITY * X_DELTA * X_DELTA);
-double LChunk::_coef_sl = k_sl * TIME_DELTA / (SOLID_DENSITY * SOLID_HEAT_CAPACITY * X_DELTA * X_DELTA);
-double LChunk::_coef_sc = k_sc * TIME_DELTA / (SOLID_DENSITY * SOLID_HEAT_CAPACITY * X_DELTA * X_DELTA);
-double LChunk::_coef_ls = k_sl * TIME_DELTA / (LIQUID_DENSITY * LIQUID_HEAT_CAPACITY * X_DELTA * X_DELTA);
-double LChunk::_coef_lc = k_lc * TIME_DELTA / (LIQUID_DENSITY * LIQUID_HEAT_CAPACITY * X_DELTA * X_DELTA);
-double LChunk::_coef_cs = k_sc * TIME_DELTA / (CAST_DENSITY * CAST_HEAT_CAPACITY * X_DELTA * X_DELTA);
-double LChunk::_coef_cl = k_lc * TIME_DELTA / (CAST_DENSITY * CAST_HEAT_CAPACITY * X_DELTA * X_DELTA);
+coef_map solid_map = {
+    {Solid, k_ss * TIME_DELTA / (SOLID_DENSITY * SOLID_HEAT_CAPACITY * X_DELTA * X_DELTA)},
+    {Liquid, k_sl * TIME_DELTA / (SOLID_DENSITY * SOLID_HEAT_CAPACITY * X_DELTA * X_DELTA)},
+    {Cast, k_sc * TIME_DELTA / (SOLID_DENSITY * SOLID_HEAT_CAPACITY * X_DELTA * X_DELTA)}
+};
+
+coef_map liquid_map = {
+    {Solid, k_sl * TIME_DELTA / (LIQUID_DENSITY * LIQUID_HEAT_CAPACITY * X_DELTA * X_DELTA)},
+    {Liquid, k_ll * TIME_DELTA / (LIQUID_DENSITY * LIQUID_HEAT_CAPACITY * X_DELTA * X_DELTA)},
+    {Cast, k_lc * TIME_DELTA / (LIQUID_DENSITY * LIQUID_HEAT_CAPACITY * X_DELTA * X_DELTA)}
+};
+
+coef_map cast_map = {
+    {Solid, k_sc * TIME_DELTA / (CAST_DENSITY * CAST_HEAT_CAPACITY * X_DELTA * X_DELTA)},
+    {Liquid, k_lc * TIME_DELTA / (CAST_DENSITY * CAST_HEAT_CAPACITY * X_DELTA * X_DELTA)},
+    {Cast, k_cc * TIME_DELTA / (CAST_DENSITY * CAST_HEAT_CAPACITY * X_DELTA * X_DELTA)}
+};
+
+p_map LChunk::_coefs {
+    {Solid, solid_map},
+    {Liquid, liquid_map},
+    {Cast, cast_map}
+};
 
 /**
  * @brief 获取下一个 Chunk 类型
@@ -160,127 +174,9 @@ bool LChunk::setCompensate(double temperature)
  */
 void LChunk::getCoef(LChunk *left, LChunk *right, double &coef_l, double &coef_r)
 {
-    switch (_status)
-    {
-    case Solid:
-        switch (left->getStatus())
-        {
-        case Solid:
-            coef_l = _coef_ss;
-            break;
+    coef_map self_map;
+    self_map = _coefs.find(_status)->second;
 
-        case Liquid:
-            coef_l = _coef_sl;
-            break;
-
-        case Cast:
-            coef_l = _coef_sc;
-            break;
-
-        default:
-            coef_l = 0;
-            break;
-        }
-
-        switch (right->getStatus())
-        {
-        case Solid:
-            coef_r = _coef_ss;
-            break;
-
-        case Liquid:
-            coef_r = _coef_sl;
-            break;
-
-        case Cast:
-            coef_r = _coef_sc;
-            break;
-
-        default:
-            coef_r = 0;
-            break;
-        }
-        break;
-
-    case Liquid:
-        switch (left->getStatus())
-        {
-        case Solid:
-            coef_l = _coef_ls;
-            break;
-
-        case Liquid:
-            coef_l = _coef_ll;
-            break;
-
-        case Cast:
-            coef_l = _coef_lc;
-            break;
-
-        default:
-            coef_l = 0;
-            break;
-        }
-
-        switch (right->getStatus())
-        {
-        case Solid:
-            coef_r = _coef_ls;
-            break;
-
-        case Liquid:
-            coef_r = _coef_ll;
-            break;
-
-        case Cast:
-            coef_r = _coef_lc;
-            break;
-
-        default:
-            coef_r = 0;
-            break;
-        }
-        break;
-
-    case Cast:
-        switch (left->getStatus())
-        {
-        case Solid:
-            coef_l = _coef_cs;
-            break;
-
-        case Liquid:
-            coef_l = _coef_cl;
-            break;
-
-        case Cast:
-            coef_l = _coef_cc;
-            break;
-
-        default:
-            coef_l = 0;
-            break;
-        }
-
-        switch (right->getStatus())
-        {
-        case Solid:
-            coef_r = _coef_cs;
-            break;
-
-        case Liquid:
-            coef_r = _coef_cl;
-            break;
-
-        case Cast:
-            coef_r = _coef_cc;
-            break;
-
-        default:
-            coef_r = 0;
-            break;
-        }
-
-        break;
-    }
+    coef_l = self_map.find(left->getStatus())->second;
+    coef_r = self_map.find(right->getStatus())->second;
 }
