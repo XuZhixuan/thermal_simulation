@@ -10,6 +10,7 @@
 
 using std::string, std::fstream, std::ofstream, std::vector, std::to_string;
 
+void clearFile(string);
 void writeToFile(ofstream, string);
 void saveState(Matrix &, double, string);
 void saveState(SqList &, double, string);

@@ -3,6 +3,19 @@
 #include "Output.h"
 
 /**
+ * @brief Clear file content
+ * @param filename file name
+ */
+void clearFile(string filename)
+{
+    using std::ios;
+    ofstream file;
+    file.open(filename, ios::trunc);
+
+    file.close();
+}
+
+/**
  * @brief 将字符串写入文件
  * @param file 输出文件
  * @param content 输出内容

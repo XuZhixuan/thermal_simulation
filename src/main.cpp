@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <cmath>
 #include "SqList.h"
 #include "Matrix.h"
 #include "Chunk.h"
@@ -12,19 +13,19 @@ void updateTemperature(SqList &, SqList &, vector<double> &);
 
 int main()
 {
-    // Matrix material, material_copy;
-    SqList material, material_copy;
+    Matrix material, material_copy;
+    // SqList material, material_copy;
     // initCoef();
     // 输入材料长宽
     int x_length = 8, y_length = 8;
     // std::cin >> x_length >> y_length;
 
     // 初始化材料节点矩阵
-    // InitMatrix(material, (x_length / X_DELTA + 1), (y_length / Y_DELTA + 1));
-    // InitMatrix(material_copy, (x_length / X_DELTA + 1), (y_length / Y_DELTA + 1));
+    InitMatrix(material, (x_length / X_DELTA + 1), (y_length / Y_DELTA + 1));
+    InitMatrix(material_copy, (x_length / X_DELTA + 1), (y_length / Y_DELTA + 1));
 
-    InitSqList(material, 24 / X_DELTA + 1);
-    InitSqList(material_copy, 24 / X_DELTA + 1);
+    // InitSqList(material, 24 / X_DELTA + 1);
+    // InitSqList(material_copy, 24 / X_DELTA + 1);
 
     // 运行模拟
     simulate(material, material_copy);
@@ -32,8 +33,8 @@ int main()
     // saveState(material, 600, "temp_field.txt");
 
     // 销毁内存空间
-    DestroySqList(material);
-    // DestroyMatrix(material);
+    // DestroySqList(material);
+    DestroyMatrix(material);
     return 0;
 }
 
@@ -48,10 +49,13 @@ void simulate(Matrix &material, Matrix &material_cp)
     double coef_m1 = (THERMAL_CONDUCTIVITY * TIME_DELTA) / (X_DELTA * X_DELTA);
     double coef_m2 = (THERMAL_CONDUCTIVITY * TIME_DELTA) / (Y_DELTA * Y_DELTA);
 
+    clearFile("temp_field.txt");
+
     while (time <= TIME_MAX)
     {
         updateTemperature(material, material_cp, coef_m1, coef_m2);
-        // TODO: 添加输出温度场的条件与函数调用
+        if (time > 10.0 && ((int)round(time * 100)) % 1000 == 0)
+            saveState(material, time, "temp_field.txt");
         time += TIME_DELTA;
     }
 }
@@ -66,7 +70,7 @@ void before(SqList &material)
     {
         if (i > 8 && i < 15)
             continue;
-        material[i]->setStatus(Cast)->setTemperature(INIT_ENVIRONMENT_TEMPERATUE);
+        material[i]->setStatus(Cast)->setTemperature(INIT_CHUNK_TEMPERATURE);
     }
 }
 
@@ -82,7 +86,7 @@ void simulate(SqList &material, SqList &material_cp)
     before(material_cp);
     vector<double> center;
 
-    while (time <= TIME_MAX)
+    while (time <= S_TIME_MAX)
     {
         updateTemperature(material, material_cp, center);
         // TODO: 添加输出温度场的条件与函数调用
@@ -92,7 +96,6 @@ void simulate(SqList &material, SqList &material_cp)
     }
 
     saveState(center, time, "solidification.txt");
-    saveState(material, time, "solidification1.txt");
 }
 
 /**

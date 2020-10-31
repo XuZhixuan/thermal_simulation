@@ -1,19 +1,26 @@
 #pragma once
 
 /** 初始节点温度 */
-#define INIT_CHUNK_TEMPERATURE 700
+#define INIT_CHUNK_TEMPERATURE 600
 
 /** 初始环境温度 */
-#define INIT_ENVIRONMENT_TEMPERATUE 10
+#define INIT_ENVIRONMENT_TEMPERATUE 100
 
 /** 计算时间上限 */
-#define TIME_MAX 6000
+#define TIME_MAX 600
+#define S_TIME_MAX 6000
 
 /** 热导率 (α) */
 #define THERMAL_CONDUCTIVITY 0.05
 
 /** 是否考虑凝固 */
 #define SOLIDIFICATING false
+
+/** 初始熔池温度 */
+#define INIT_LIQUID_TEMPERATURE 700
+
+/** 初始铸形温度 */
+#define INIT_CAST_TEMPERATURE 10
 
 /** 材料凝固温度 */
 #define FREEZING_TEMPERATURE 660

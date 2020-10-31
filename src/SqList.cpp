@@ -22,7 +22,7 @@ void InitSqList(SqList &list, int length)
 		list.base[i] = new LChunk(
 			type,
 			status,
-			type == Full ? INIT_CHUNK_TEMPERATURE : INIT_ENVIRONMENT_TEMPERATUE);
+			INIT_LIQUID_TEMPERATURE);
 		type = Full;
 		status = Liquid;
 	}
